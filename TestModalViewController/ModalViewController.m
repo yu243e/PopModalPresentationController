@@ -25,7 +25,7 @@
     [self.backgroundButton addTarget:self action:@selector(backgroundButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [self.dismissModalButton addTarget:self action:@selector(dismissModalButtonClick) forControlEvents:UIControlEventTouchUpInside];
     
-    
+    [self layoutPageSubviews];
 }
 
 - (void)layoutPageSubviews {
