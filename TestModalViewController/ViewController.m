@@ -43,16 +43,16 @@
 - (UIView *)backgroundView {
     if (!_backgroundView) {
         _backgroundView = [[UIView alloc]init];
-        _backgroundView.backgroundColor = [UIColor blueColor];
+        _backgroundView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"blue"]];
     }
     return _backgroundView;
 }
 
 - (UIButton *)showModalButton {
     if (!_showModalButton) {
-        _showModalButton = [[UIButton alloc]init];
+        _showModalButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_showModalButton setTitle:@"show modal" forState:UIControlStateNormal];
-        _showModalButton.titleLabel.textColor = [UIColor whiteColor];
+        [_showModalButton setTitleColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"green"]] forState:UIControlStateNormal];
         _showModalButton.backgroundColor = [UIColor greenColor];
         
     }

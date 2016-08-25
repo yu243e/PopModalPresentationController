@@ -25,7 +25,7 @@
     [self.backgroundButton addTarget:self action:@selector(backgroundButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [self.dismissModalButton addTarget:self action:@selector(dismissModalButtonClick) forControlEvents:UIControlEventTouchUpInside];
     
-    [self layoutPageSubviews];
+    
 }
 
 - (void)layoutPageSubviews {
@@ -57,7 +57,7 @@
 #pragma mark - getters and setters
 - (UIView *)backgroundButton {
     if (!_backgroundButton) {
-        _backgroundButton = [[UIButton alloc]init];
+        _backgroundButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _backgroundButton.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
     }
     return _backgroundButton;
@@ -66,14 +66,14 @@
 - (UIView *)aView {
     if (!_aView) {
         _aView = [[UIView alloc]init];
-        _aView.backgroundColor = [UIColor greenColor];
+        _aView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"green"]];
     }
     return _aView;
 }
 
 - (UIButton *)dismissModalButton {
     if (!_dismissModalButton) {
-        _dismissModalButton = [[UIButton alloc]init];
+        _dismissModalButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_dismissModalButton setTitle:@"dismiss modal" forState:UIControlStateNormal];
         _dismissModalButton.backgroundColor = [UIColor redColor];
     }
