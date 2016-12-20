@@ -14,20 +14,23 @@
 @property (nonatomic, strong) UIButton *showModalButton;@end
 
 @implementation ViewController
-#pragma mark - lifeCycle
+#pragma mark - life cycle
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.backgroundView];
     [self.view addSubview:self.showModalButton];
     [self.showModalButton addTarget:self action:@selector(showModalView) forControlEvents:UIControlEventTouchUpInside];
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.backgroundView.frame = CGRectMake(0, 0, 375, 667);
-    self.showModalButton.frame = CGRectMake(100, 100, 200, 22);
+    self.backgroundView.frame = self.view.frame;
+    CGFloat buttonWidth = CGRectGetWidth(self.view.frame) / 2;
+    CGFloat buttonHeight = 80;
+    CGFloat buttonLeft = CGRectGetWidth(self.view.frame) / 2 - buttonWidth / 2;
+    CGFloat buttonTop = CGRectGetHeight(self.view.frame) / 2 - buttonHeight / 2;
+    self.showModalButton.frame = CGRectMake(buttonLeft, buttonTop, buttonWidth, buttonHeight);
 }
 
 #pragma mark - private methods
@@ -35,11 +38,11 @@
     //only support iOS8+
     ModalViewController * presentedModalViewController = [[ModalViewController alloc]init];
     presentedModalViewController.modalPresentationStyle = UIModalPresentationOverFullScreen;
-    presentedModalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    presentedModalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     [self presentViewController:presentedModalViewController animated:YES completion:nil];
 }
 
-#pragma mark - setter and getter
+#pragma mark - getters and setters
 - (UIView *)backgroundView {
     if (!_backgroundView) {
         _backgroundView = [[UIView alloc]init];
@@ -51,10 +54,10 @@
 - (UIButton *)showModalButton {
     if (!_showModalButton) {
         _showModalButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_showModalButton setTitle:@"show modal" forState:UIControlStateNormal];
-        [_showModalButton setTitleColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"green"]] forState:UIControlStateNormal];
-        _showModalButton.backgroundColor = [UIColor greenColor];
-        
+        [_showModalButton setTitle:@"show" forState:UIControlStateNormal];
+        [_showModalButton.titleLabel setFont:[UIFont systemFontOfSize:25]];
+        [_showModalButton setTitleColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"blue"]] forState:UIControlStateNormal];
+        [_showModalButton setBackgroundImage:[UIImage imageNamed:@"green"] forState:UIControlStateNormal];
     }
     return _showModalButton;
 }

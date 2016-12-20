@@ -9,7 +9,7 @@
 
 @interface ModalViewController ()
 @property (nonatomic, strong) UIButton *backgroundButton;
-@property (nonatomic, strong) UIView *aView;
+@property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, strong) UIButton *dismissModalButton;
 @end
 
@@ -19,8 +19,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view addSubview:self.backgroundButton];
-    [self.view addSubview:self.aView];
-    [self.view addSubview:self.dismissModalButton];
+    [self.view addSubview:self.contentView];
+    [self.contentView addSubview:self.dismissModalButton];
     
     [self.backgroundButton addTarget:self action:@selector(backgroundButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [self.dismissModalButton addTarget:self action:@selector(dismissModalButtonClick) forControlEvents:UIControlEventTouchUpInside];
@@ -35,9 +35,18 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.backgroundButton.frame = self.view.frame;
-    ;
-    self.aView.frame = CGRectMake(75/2. , 150, 300, 300);
-    self.dismissModalButton.frame = CGRectMake(100, 150, 120, 44);
+    
+    CGFloat contentViewWidth = CGRectGetWidth(self.view.frame) * 0.8;
+    CGFloat contentViewHeight = contentViewWidth;
+    CGFloat contentViewLeft = CGRectGetWidth(self.view.frame) / 2 - contentViewWidth / 2;
+    CGFloat contentViewTop = CGRectGetHeight(self.view.frame) / 2 - contentViewHeight / 2;
+    self.contentView.frame = CGRectMake(contentViewLeft , contentViewTop, contentViewWidth, contentViewHeight);
+    
+    CGFloat buttonWidth = CGRectGetWidth(self.view.frame) * 0.4;
+    CGFloat buttonHeight = 60;
+    CGFloat buttonLeft = contentViewWidth - buttonWidth;
+    CGFloat buttonTop = 0;
+    self.dismissModalButton.frame = CGRectMake(buttonLeft, buttonTop, buttonWidth, buttonHeight);
 }
 
 #pragma mark - event response
@@ -63,19 +72,19 @@
     return _backgroundButton;
 }
 
-- (UIView *)aView {
-    if (!_aView) {
-        _aView = [[UIView alloc]init];
-        _aView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"green"]];
+- (UIView *)contentView {
+    if (!_contentView) {
+        _contentView = [[UIView alloc]init];
+        _contentView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"green"]];
     }
-    return _aView;
+    return _contentView;
 }
 
 - (UIButton *)dismissModalButton {
     if (!_dismissModalButton) {
         _dismissModalButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_dismissModalButton setTitle:@"dismiss modal" forState:UIControlStateNormal];
-        _dismissModalButton.backgroundColor = [UIColor redColor];
+        [_dismissModalButton setBackgroundImage:[UIImage imageNamed:@"blue"] forState:UIControlStateNormal];
     }
     return _dismissModalButton;
 }
