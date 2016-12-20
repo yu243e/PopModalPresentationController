@@ -22,8 +22,8 @@
     [self.view addSubview:self.contentView];
     [self.contentView addSubview:self.dismissModalButton];
     
-    [self.backgroundButton addTarget:self action:@selector(backgroundButtonClick) forControlEvents:UIControlEventTouchUpInside];
-    [self.dismissModalButton addTarget:self action:@selector(dismissModalButtonClick) forControlEvents:UIControlEventTouchUpInside];
+    [self.backgroundButton addTarget:self action:@selector(backgroundButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.dismissModalButton addTarget:self action:@selector(dismissModalButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     
     
 }
@@ -50,17 +50,19 @@
 }
 
 #pragma mark - event response
-- (void)backgroundButtonClick {
+- (void)backgroundButtonClicked {
     [self dismissModalView];
 }
 
-- (void)dismissModalButtonClick {
+- (void)dismissModalButtonClicked {
     [self dismissModalView];
 }
 
 #pragma mark - private methods
 - (void)dismissModalView {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    if (self.delegate) {
+        [self.delegate modalViewControllerDismiss:self];
+    }
 }
 
 #pragma mark - getters and setters

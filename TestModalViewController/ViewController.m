@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "ModalViewController.h"
 
-@interface ViewController ()
+@interface ViewController() <ModalViewControllerDelegate>
 @property (nonatomic, strong) UIView *backgroundView;
 @property (nonatomic, strong) UIButton *showModalButton;@end
 
@@ -20,7 +20,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.backgroundView];
     [self.view addSubview:self.showModalButton];
-    [self.showModalButton addTarget:self action:@selector(showModalView) forControlEvents:UIControlEventTouchUpInside];
+    [self.showModalButton addTarget:self action:@selector(showModalButtonClicked) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -33,10 +33,17 @@
     self.showModalButton.frame = CGRectMake(buttonLeft, buttonTop, buttonWidth, buttonHeight);
 }
 
+#pragma mark - ModalViewControllerDelegate
+- (void)modalViewControllerDismiss:(ModalViewController *)viewController {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - private methods
-- (void)showModalView {
+- (void)showModalButtonClicked {
     //only support iOS8+
-    ModalViewController * presentedModalViewController = [[ModalViewController alloc]init];
+    ModalViewController * presentedModalViewController = [[ModalViewController alloc] init];
+    presentedModalViewController.delegate = self;
+    
     presentedModalViewController.modalPresentationStyle = UIModalPresentationOverFullScreen;
     presentedModalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     [self presentViewController:presentedModalViewController animated:YES completion:nil];
