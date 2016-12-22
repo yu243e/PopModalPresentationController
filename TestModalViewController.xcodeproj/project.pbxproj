@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C1C17201E092B7800DBB909 /* BounceTransitionAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C1C171F1E092B7700DBB909 /* BounceTransitionAnimator.m */; };
 		3CA855771D61ADA400320E4C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CA855761D61ADA400320E4C /* main.m */; };
 		3CA8557A1D61ADA400320E4C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CA855791D61ADA400320E4C /* AppDelegate.m */; };
 		3CA8557D1D61ADA400320E4C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CA8557C1D61ADA400320E4C /* ViewController.m */; };
@@ -36,6 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3C1C171E1E092B7700DBB909 /* BounceTransitionAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BounceTransitionAnimator.h; sourceTree = "<group>"; };
+		3C1C171F1E092B7700DBB909 /* BounceTransitionAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BounceTransitionAnimator.m; sourceTree = "<group>"; };
 		3CA855721D61ADA400320E4C /* TestModalViewController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestModalViewController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CA855761D61ADA400320E4C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		3CA855781D61ADA400320E4C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -110,6 +113,8 @@
 				3CA8557C1D61ADA400320E4C /* ViewController.m */,
 				3CA855A81D61ADD900320E4C /* ModalViewController.h */,
 				3CA855A91D61ADD900320E4C /* ModalViewController.m */,
+				3C1C171E1E092B7700DBB909 /* BounceTransitionAnimator.h */,
+				3C1C171F1E092B7700DBB909 /* BounceTransitionAnimator.m */,
 				3CA8557E1D61ADA400320E4C /* Main.storyboard */,
 				3CA855811D61ADA400320E4C /* Assets.xcassets */,
 				3CA855831D61ADA400320E4C /* LaunchScreen.storyboard */,
@@ -207,7 +212,7 @@
 		3CA8556A1D61ADA400320E4C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = yu243e;
 				TargetAttributes = {
 					3CA855711D61ADA400320E4C = {
@@ -278,6 +283,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C1C17201E092B7800DBB909 /* BounceTransitionAnimator.m in Sources */,
 				3CA855AA1D61ADD900320E4C /* ModalViewController.m in Sources */,
 				3CA8557D1D61ADA400320E4C /* ViewController.m in Sources */,
 				3CA8557A1D61ADA400320E4C /* AppDelegate.m in Sources */,
@@ -350,8 +356,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -373,7 +381,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -395,8 +403,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -412,7 +422,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

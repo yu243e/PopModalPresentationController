@@ -8,10 +8,16 @@
 
 #import "ViewController.h"
 #import "ModalViewController.h"
+#import "BounceTransitionAnimator.h"
 
-@interface ViewController() <ModalViewControllerDelegate>
+@interface ViewController() <ModalViewControllerDelegate, UIViewControllerTransitioningDelegate>
+
 @property (nonatomic, strong) UIView *backgroundView;
-@property (nonatomic, strong) UIButton *showModalButton;@end
+@property (nonatomic, strong) UIButton *showModalButton;
+
+@property (nonatomic, strong) BounceTransitionAnimator *presentAnimation;
+
+@end
 
 @implementation ViewController
 #pragma mark - life cycle
@@ -38,14 +44,23 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - UIViewControllerTransitioningDelegate
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    return self.presentAnimation;
+}
+
+//- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+//    return self.presentAnimation;
+//}
+
 #pragma mark - private methods
 - (void)showModalButtonClicked {
     //only support iOS8+
     ModalViewController * presentedModalViewController = [[ModalViewController alloc] init];
     presentedModalViewController.delegate = self;
+    presentedModalViewController.transitioningDelegate = self;
     
     presentedModalViewController.modalPresentationStyle = UIModalPresentationOverFullScreen;
-    presentedModalViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     [self presentViewController:presentedModalViewController animated:YES completion:nil];
 }
 
@@ -67,6 +82,13 @@
         [_showModalButton setBackgroundImage:[UIImage imageNamed:@"green"] forState:UIControlStateNormal];
     }
     return _showModalButton;
+}
+
+- (BounceTransitionAnimator *)presentAnimation {
+    if (!_presentAnimation) {
+        _presentAnimation = [[BounceTransitionAnimator alloc] init];
+    }
+    return _presentAnimation;
 }
 @end
 

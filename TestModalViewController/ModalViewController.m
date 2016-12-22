@@ -8,9 +8,11 @@
 #import "ModalViewController.h"
 
 @interface ModalViewController ()
+
 @property (nonatomic, strong) UIButton *backgroundButton;
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, strong) UIButton *dismissModalButton;
+
 @end
 
 @implementation ModalViewController
@@ -18,14 +20,13 @@
 #pragma mark - life cycle
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     [self.view addSubview:self.backgroundButton];
     [self.view addSubview:self.contentView];
     [self.contentView addSubview:self.dismissModalButton];
     
     [self.backgroundButton addTarget:self action:@selector(backgroundButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.dismissModalButton addTarget:self action:@selector(dismissModalButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-    
-    
 }
 
 - (void)layoutPageSubviews {
