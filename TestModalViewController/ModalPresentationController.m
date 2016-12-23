@@ -9,7 +9,7 @@
 #import "ModalPresentationController.h"
 
 static const CGFloat modalDimmingViewAlpha = 0.5f;
-static const NSTimeInterval modalTransitionDuration = 1;
+static const NSTimeInterval modalTransitionDuration = 0.8;
 
 @interface ModalPresentationController () <UIViewControllerAnimatedTransitioning>
 @property (nonatomic, strong) UIView *dimmingView;
@@ -100,6 +100,18 @@ static const NSTimeInterval modalTransitionDuration = 1;
 - (UIPresentationController *)presentationControllerForPresentedViewController:(UIViewController *)presented presentingViewController:(UIViewController *)presenting sourceViewController:(UIViewController *)source {
     NSAssert(self.presentedViewController == presented, @"You didn't initialize %@ with the correct presentedViewController.  Expected %@, got %@.",
              self, presented, self.presentedViewController);
+    return self;
+}
+
+//返回 self 作为 animator
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source
+{
+    return self;
+}
+
+//返回 self  作为 animator
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed
+{
     return self;
 }
 
