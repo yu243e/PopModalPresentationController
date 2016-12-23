@@ -70,7 +70,7 @@
 - (UIView *)backgroundButton {
     if (!_backgroundButton) {
         _backgroundButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _backgroundButton.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
+        _backgroundButton.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.0];
     }
     return _backgroundButton;
 }

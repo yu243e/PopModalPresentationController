@@ -8,14 +8,12 @@
 
 #import "ViewController.h"
 #import "ModalViewController.h"
-#import "BounceTransitionAnimator.h"
+#import "ModalPresentationController.h"
 
-@interface ViewController() <ModalViewControllerDelegate, UIViewControllerTransitioningDelegate>
+@interface ViewController() <ModalViewControllerDelegate>
 
 @property (nonatomic, strong) UIView *backgroundView;
 @property (nonatomic, strong) UIButton *showModalButton;
-
-@property (nonatomic, strong) BounceTransitionAnimator *presentAnimation;
 
 @end
 
@@ -44,23 +42,20 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - UIViewControllerTransitioningDelegate
-- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
-    return self.presentAnimation;
-}
-
-//- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
-//    return self.presentAnimation;
-//}
-
 #pragma mark - private methods
 - (void)showModalButtonClicked {
     //only support iOS8+
     ModalViewController * presentedModalViewController = [[ModalViewController alloc] init];
-    presentedModalViewController.delegate = self;
-    presentedModalViewController.transitioningDelegate = self;
     
-    presentedModalViewController.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    //因为没有被强持有，必须用NS_VALID_UNTIL_END_OF_SCOPE 保持其存在
+    //参考 APPLE Custom View Controller Presentations and Transitions
+    ModalPresentationController *presentationController NS_VALID_UNTIL_END_OF_SCOPE;
+    presentationController = [[ModalPresentationController alloc] initWithPresentedViewController:presentedModalViewController presentingViewController:self];
+    
+    presentedModalViewController.delegate = self;
+    presentedModalViewController.transitioningDelegate = presentationController;
+    
+    presentedModalViewController.modalPresentationStyle = UIModalPresentationCustom;
     [self presentViewController:presentedModalViewController animated:YES completion:nil];
 }
 
@@ -82,13 +77,6 @@
         [_showModalButton setBackgroundImage:[UIImage imageNamed:@"green"] forState:UIControlStateNormal];
     }
     return _showModalButton;
-}
-
-- (BounceTransitionAnimator *)presentAnimation {
-    if (!_presentAnimation) {
-        _presentAnimation = [[BounceTransitionAnimator alloc] init];
-    }
-    return _presentAnimation;
 }
 @end
 
