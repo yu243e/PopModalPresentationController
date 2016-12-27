@@ -89,7 +89,7 @@
 
 - (UISegmentedControl *)styleSegmentedControl {
     if (!_styleSegmentedControl) {
-        NSArray *items = @[@"center", @"top", @"down"];
+        NSArray *items = @[@"center", @"top", @"bottom"];
         _styleSegmentedControl = [[UISegmentedControl alloc] initWithItems:items];
         _styleSegmentedControl.tintColor = [UIColor whiteColor];
 //        _styleSegmentedControl.selectedSegmentIndex = 0;
