@@ -9,7 +9,11 @@
 #import "ModalPresentationController.h"
 
 static const CGFloat modalDimmingViewAlpha = 0.5f;
-static const NSTimeInterval modalTransitionDuration = 0.8;
+static const NSTimeInterval modalTransitionDuration = 0.3f;
+static const NSTimeInterval modalDismissTransitionDuration = 0.3f;
+//初始动画和结束动画(centerStyle) view长宽各为
+static const CGFloat modalCenterInitialViewSizeRatio = 0.6f;
+static const CGFloat modalCenterInitialViewAlpha = 0.5f;
 
 @interface ModalPresentationController () <UIViewControllerAnimatedTransitioning>
 @property (nonatomic, strong) UIView *dimmingView;
@@ -30,6 +34,7 @@ static const NSTimeInterval modalTransitionDuration = 0.8;
     //加入 dimmingView
     [self.containerView addSubview:self.dimmingView];
     self.dimmingView.userInteractionEnabled = YES;
+    [self.dimmingView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dimmingViewTapped:)]];
     
     //获取转场协调器
     id<UIViewControllerTransitionCoordinator> transitionCoordinator = self.presentingViewController.transitionCoordinator;
@@ -38,7 +43,7 @@ static const NSTimeInterval modalTransitionDuration = 0.8;
     self.dimmingView.alpha = 0.f;
     [transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         self.dimmingView.alpha = modalDimmingViewAlpha;
-    } completion: nil];
+    } completion: NULL];
 }
 
 - (void)dismissalTransitionWillBegin
@@ -47,12 +52,105 @@ static const NSTimeInterval modalTransitionDuration = 0.8;
     
     [transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         self.dimmingView.alpha = 0.f;
-    } completion:nil];
+    } completion:NULL];
+}
+
+#pragma mark - about layout
+- (CGSize)sizeForChildContentContainer:(id<UIContentContainer>)container withParentContainerSize:(CGSize)parentSize {
+    if (container == self.presentedViewController) {
+        return ((UIViewController *)container).preferredContentSize;
+    } else {
+        return [super sizeForChildContentContainer:container withParentContainerSize:parentSize];
+    }
+}
+
+- (CGRect)frameOfPresentedViewInContainerView
+{
+    CGRect containerViewBounds = self.containerView.bounds;
+    CGSize presentedViewContentSize = [self sizeForChildContentContainer:self.presentedViewController withParentContainerSize:containerViewBounds.size];
+    
+    // The presented view extends presentedViewContentSize.height points from
+    // the bottom edge of the screen.
+    CGRect presentedViewControllerFrame = containerViewBounds;
+    presentedViewControllerFrame.size.width = presentedViewContentSize.width;
+    presentedViewControllerFrame.size.height = presentedViewContentSize.height;
+    
+    switch (self.modalStyle) {
+        case CHYCModalPresentationStyleFromTop:
+            presentedViewControllerFrame.origin.y = 0;
+            presentedViewControllerFrame.origin.x = (CGRectGetMaxX(containerViewBounds) - presentedViewContentSize.width) / 2;
+            break;
+        case CHYCModalPresentationStyleFromBottom:
+            presentedViewControllerFrame.origin.y = CGRectGetMaxY(containerViewBounds) - presentedViewContentSize.height;
+            presentedViewControllerFrame.origin.x = (CGRectGetMaxX(containerViewBounds) - presentedViewContentSize.width) / 2;
+            break;
+        case CHYCModalPresentationStyleCenter:
+            presentedViewControllerFrame.origin.y = (CGRectGetMaxY(containerViewBounds) - presentedViewContentSize.height) / 2;
+            presentedViewControllerFrame.origin.x = (CGRectGetMaxX(containerViewBounds) - presentedViewContentSize.width) / 2;
+            break;
+    }
+    
+    return presentedViewControllerFrame;
+}
+
+//出现动画的 presentedView 的初始状态
+- (CGRect)toViewInitialFrameForStyle:(CHYCModalPresentationStyle)modalStyle containterViewBounds:(CGRect)bounds finalSize:(CGSize)finalSize {
+    CGRect toViewInitialFrame;
+    
+    //置中偏移量
+    CGFloat XOffset = CGRectGetMidX(bounds) - finalSize.width / 2;
+    CGFloat YOffset = CGRectGetMidY(bounds) - finalSize.height / 2;
+    switch (modalStyle) {
+        case CHYCModalPresentationStyleFromTop:
+            toViewInitialFrame.origin = CGPointMake(XOffset, - CGRectGetMaxY(bounds));
+            toViewInitialFrame.size = finalSize;
+            break;
+        case CHYCModalPresentationStyleFromBottom:
+            toViewInitialFrame.origin = CGPointMake(XOffset, CGRectGetMaxY(bounds));
+            toViewInitialFrame.size = finalSize;
+            break;
+        case CHYCModalPresentationStyleCenter:
+            toViewInitialFrame.origin = CGPointMake(XOffset, YOffset);
+            toViewInitialFrame.size = finalSize;
+            break;
+    }
+    return toViewInitialFrame;
+}
+
+//结束动画的 presentedView 的最终状态
+- (CGRect)fromViewFinalFrameForStyle:(CHYCModalPresentationStyle)modalStyle fromViewFrame:(CGRect)fromViewFrame {
+    CGRect fromViewFinalFrame = CGRectZero;
+    
+    switch (modalStyle) {
+        case CHYCModalPresentationStyleFromTop:
+            fromViewFinalFrame = CGRectOffset(fromViewFrame, 0, - CGRectGetHeight(fromViewFrame));
+            break;
+        case CHYCModalPresentationStyleFromBottom:
+            fromViewFinalFrame = CGRectOffset(fromViewFrame, 0, CGRectGetHeight(fromViewFrame));
+            break;
+        case CHYCModalPresentationStyleCenter:
+            //do nothing
+            break;
+    }
+    return fromViewFinalFrame;
 }
 
 #pragma mark - UIViewControllerAnimatedTransitioning
 - (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
-    return [transitionContext isAnimated] ? modalTransitionDuration : 0;
+    //点开的展现动画，或 dismiss 动画
+    UIViewController *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+    BOOL isPresenting = (fromViewController == self.presentingViewController);
+    
+    //返回设定的时间
+    if ([transitionContext isAnimated]) {
+        if (isPresenting) {
+            return modalTransitionDuration;
+        } else {
+            return modalDismissTransitionDuration;
+        }
+    } else {
+        return 0;
+    }
 }
 
 - (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
@@ -74,26 +172,47 @@ static const NSTimeInterval modalTransitionDuration = 0.8;
     [containerView addSubview:toView];
     
     if (isPresenting) {
-        //toView 出现点在最下方，大小等同最终大小
-        toViewInitialFrame.origin = CGPointMake(CGRectGetMinX(containerView.bounds), CGRectGetMaxY(containerView.bounds));
-        toViewInitialFrame.size = toViewFinalFrame.size;
+        //出现动画
+        toViewInitialFrame = [self toViewInitialFrameForStyle:self.modalStyle containterViewBounds:containerView.bounds finalSize:toViewFinalFrame.size];;
         toView.frame = toViewInitialFrame;
+        
+        if (self.modalStyle == CHYCModalPresentationStyleCenter) {
+            //缩小并半透明化
+            toView.alpha = modalCenterInitialViewAlpha;
+            toView.transform = CGAffineTransformMakeScale(modalCenterInitialViewSizeRatio, modalCenterInitialViewSizeRatio);
+        }
     } else {
-        //fromView 的出现点在
-        fromViewFinalFrame = CGRectOffset(fromView.frame, 0, CGRectGetHeight(fromView.frame));
+        //结束动画
+        fromViewFinalFrame = [self fromViewFinalFrameForStyle:self.modalStyle fromViewFrame:fromView.frame];
     }
     
     NSTimeInterval transitionDuration = [self transitionDuration:transitionContext];
     
-    [UIView animateWithDuration:transitionDuration animations:^{
-        if (isPresenting) {
+    if (self.modalStyle == CHYCModalPresentationStyleCenter) {
+        [UIView animateWithDuration:transitionDuration delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^{
+            if (isPresenting) {
+                //恢复正常态
+                toView.alpha = 1.0f;
+                toView.transform = CGAffineTransformIdentity;
+            } else {
+                fromView.alpha = 0.0f;
+                fromView.transform = CGAffineTransformMakeScale(modalCenterInitialViewSizeRatio, modalCenterInitialViewSizeRatio);
+            }
+        } completion:^(BOOL finished) {
             toView.frame = toViewFinalFrame;
-        } else {
-            fromView.frame = fromViewFinalFrame;
-        }
-    } completion:^(BOOL finished) {
-        [transitionContext completeTransition:YES];
-    }];
+            [transitionContext completeTransition:YES];
+        }];
+    } else {
+        [UIView animateWithDuration:transitionDuration delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^{
+            if (isPresenting) {
+                toView.frame = toViewFinalFrame;
+            } else {
+                fromView.frame = fromViewFinalFrame;
+            }
+        } completion:^(BOOL finished) {
+            [transitionContext completeTransition:YES];
+        }];
+    }
 }
 
 #pragma mark - UIViewControllerTransitioningDelegate
@@ -115,6 +234,13 @@ static const NSTimeInterval modalTransitionDuration = 0.8;
     return self;
 }
 
+#pragma mark - event response
+- (void)dimmingViewTapped:(UITapGestureRecognizer*)sender
+{
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:NULL];
+    
+}
+
 #pragma mark - getters and setters
 - (UIView *)dimmingView {
     if (!_dimmingView) {
@@ -123,5 +249,10 @@ static const NSTimeInterval modalTransitionDuration = 0.8;
         _dimmingView.opaque = NO;
     }
     return _dimmingView;
+}
+
+- (void)setModalStyle:(CHYCModalPresentationStyle)modalStyle {
+    NSAssert(modalStyle >= 0 && modalStyle < 3, @"非预定义的 ModalPresentationStyle %@", @(modalStyle));
+    _modalStyle = modalStyle;
 }
 @end
