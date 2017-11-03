@@ -201,12 +201,9 @@ static const CGFloat modalCenterInitialViewAlpha = 0.5f;
         }
         if (self.modalStyle == CHYCModalPresentationStyleFromPoint) {
             toView.alpha = self.config.initAlpha;
-            //疑问 这里的anchorPoint不起作用 则手动把frame调整至缩小时状态
-            //令中点等同anchorPoint
-            CGFloat x = self.config.anchorPoint.x * self.config.frame.size.width + self.config.frame.origin.x - self.config.frame.size.width / 2;
-            CGFloat y = self.config.anchorPoint.y * self.config.frame.size.height + self.config.frame.origin.y - self.config.frame.size.height / 2;
-            toView.frame = CGRectMake(x, y, self.config.frame.size.width, self.config.frame.size.height);
+            //anchorPoint改变时frame会改变
             toView.layer.anchorPoint = self.config.anchorPoint;
+            toView.frame = toViewInitialFrame;
             toView.transform = CGAffineTransformMakeScale(self.config.initSizeRatio, self.config.initSizeRatio);
         }
     } else {
