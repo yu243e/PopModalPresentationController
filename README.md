@@ -1,2 +1,7 @@
-# TestModalViewController
- 测试模态视图和代码的基本规范
+# PopModalPresentationController
+模态视图
+使用PresentationController实现，参考苹果官方代码
+PresentedViewController不需要实现dimmingView的点击操作
+支持Top、Bottom、Center、FromPoint四种动画
+FromPoint可自定义弹出位置和弹出点的位置
+

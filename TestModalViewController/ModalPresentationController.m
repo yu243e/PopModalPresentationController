@@ -8,11 +8,14 @@
 
 #import "ModalPresentationController.h"
 
+@implementation ModalPresentationFromPointConfig
+@end
+
 static const CGFloat modalDimmingViewAlpha = 0.5f;
 static const NSTimeInterval modalTransitionDuration = 0.3f;
 static const NSTimeInterval modalDismissTransitionDuration = 0.3f;
 //初始动画和结束动画(centerStyle) view长宽各为
-static const CGFloat modalCenterInitialViewSizeRatio = 0.6f;
+static const CGFloat modalCenterInitialViewSizeRatio = 0.1f;
 static const CGFloat modalCenterInitialViewAlpha = 0.5f;
 
 @interface ModalPresentationController () <UIViewControllerAnimatedTransitioning>
@@ -69,9 +72,7 @@ static const CGFloat modalCenterInitialViewAlpha = 0.5f;
     CGRect containerViewBounds = self.containerView.bounds;
     CGSize presentedViewContentSize = [self sizeForChildContentContainer:self.presentedViewController withParentContainerSize:containerViewBounds.size];
     
-    // The presented view extends presentedViewContentSize.height points from
-    // the bottom edge of the screen.
-    CGRect presentedViewControllerFrame = containerViewBounds;
+    CGRect presentedViewControllerFrame;
     presentedViewControllerFrame.size.width = presentedViewContentSize.width;
     presentedViewControllerFrame.size.height = presentedViewContentSize.height;
     
@@ -87,6 +88,10 @@ static const CGFloat modalCenterInitialViewAlpha = 0.5f;
         case CHYCModalPresentationStyleCenter:
             presentedViewControllerFrame.origin.y = (CGRectGetMaxY(containerViewBounds) - presentedViewContentSize.height) / 2;
             presentedViewControllerFrame.origin.x = (CGRectGetMaxX(containerViewBounds) - presentedViewContentSize.width) / 2;
+            break;
+        case CHYCModalPresentationStyleFromPoint:
+            presentedViewControllerFrame.origin.y = self.config.frame.origin.y;
+            presentedViewControllerFrame.origin.x = self.config.frame.origin.x;
             break;
     }
     
@@ -113,6 +118,11 @@ static const CGFloat modalCenterInitialViewAlpha = 0.5f;
             toViewInitialFrame.origin = CGPointMake(XOffset, YOffset);
             toViewInitialFrame.size = finalSize;
             break;
+        case CHYCModalPresentationStyleFromPoint:
+            toViewInitialFrame.origin = self.config.frame.origin;
+//            toViewInitialFrame.origin = CGPointMake(self.config.frame.origin.x + 0.5 * self.config.frame.size.width, self.config.frame.origin.y + 0.5 * self.config.frame.size.height);
+            toViewInitialFrame.size = finalSize;
+            break;
     }
     return toViewInitialFrame;
 }
@@ -130,6 +140,8 @@ static const CGFloat modalCenterInitialViewAlpha = 0.5f;
             break;
         case CHYCModalPresentationStyleCenter:
             //do nothing
+            break;
+        case CHYCModalPresentationStyleFromPoint:
             break;
     }
     return fromViewFinalFrame;
@@ -158,6 +170,12 @@ static const CGFloat modalCenterInitialViewAlpha = 0.5f;
     UIViewController *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     
     UIView *containerView = transitionContext.containerView;
+    // For a Presentation:
+    //      fromView = The presenting view.
+    //      toView   = The presented view.
+    // For a Dismissal:
+    //      fromView = The presented view.
+    //      toView   = The presenting view.
     UIView *toView = [transitionContext viewForKey:UITransitionContextToViewKey];
     UIView *fromView = [transitionContext viewForKey:UITransitionContextFromViewKey];
     
@@ -181,6 +199,16 @@ static const CGFloat modalCenterInitialViewAlpha = 0.5f;
             toView.alpha = modalCenterInitialViewAlpha;
             toView.transform = CGAffineTransformMakeScale(modalCenterInitialViewSizeRatio, modalCenterInitialViewSizeRatio);
         }
+        if (self.modalStyle == CHYCModalPresentationStyleFromPoint) {
+            toView.alpha = self.config.initAlpha;
+            //疑问 这里的anchorPoint不起作用 则手动把frame调整至缩小时状态
+            //令中点等同anchorPoint
+            CGFloat x = self.config.anchorPoint.x * self.config.frame.size.width + self.config.frame.origin.x - self.config.frame.size.width / 2;
+            CGFloat y = self.config.anchorPoint.y * self.config.frame.size.height + self.config.frame.origin.y - self.config.frame.size.height / 2;
+            toView.frame = CGRectMake(x, y, self.config.frame.size.width, self.config.frame.size.height);
+            toView.layer.anchorPoint = self.config.anchorPoint;
+            toView.transform = CGAffineTransformMakeScale(self.config.initSizeRatio, self.config.initSizeRatio);
+        }
     } else {
         //结束动画
         fromViewFinalFrame = [self fromViewFinalFrameForStyle:self.modalStyle fromViewFrame:fromView.frame];
@@ -197,6 +225,21 @@ static const CGFloat modalCenterInitialViewAlpha = 0.5f;
             } else {
                 fromView.alpha = 0.0f;
                 fromView.transform = CGAffineTransformMakeScale(modalCenterInitialViewSizeRatio, modalCenterInitialViewSizeRatio);
+            }
+        } completion:^(BOOL finished) {
+            toView.frame = toViewFinalFrame;
+            [transitionContext completeTransition:YES];
+        }];
+    } else if (self.modalStyle == CHYCModalPresentationStyleFromPoint) {
+        fromView.layer.anchorPoint = self.config.anchorPoint;
+        [UIView animateWithDuration:transitionDuration delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^{
+            if (isPresenting) {
+                //恢复正常态
+                toView.alpha = 1.0f;
+                toView.transform = CGAffineTransformIdentity;
+            } else {
+                fromView.alpha = 0.0f;
+                fromView.transform = CGAffineTransformMakeScale(self.config.initSizeRatio, self.config.initSizeRatio);
             }
         } completion:^(BOOL finished) {
             toView.frame = toViewFinalFrame;
@@ -249,10 +292,5 @@ static const CGFloat modalCenterInitialViewAlpha = 0.5f;
         _dimmingView.opaque = NO;
     }
     return _dimmingView;
-}
-
-- (void)setModalStyle:(CHYCModalPresentationStyle)modalStyle {
-    NSAssert(modalStyle >= 0 && modalStyle < 3, @"非预定义的 ModalPresentationStyle %@", @(modalStyle));
-    _modalStyle = modalStyle;
 }
 @end

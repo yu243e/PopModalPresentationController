@@ -10,6 +10,9 @@
 #import "ModalViewController.h"
 #import "ModalPresentationController.h"
 
+#define kSCREEN_WIDTH   [UIScreen mainScreen].bounds.size.width
+#define kSCREEN_HEIGHT    [UIScreen mainScreen].bounds.size.height
+
 @interface ViewController() <ModalViewControllerDelegate>
 
 @property (nonatomic, strong) UIView *backgroundView;
@@ -60,6 +63,14 @@
     if (self.styleSegmentedControl.selectedSegmentIndex != UISegmentedControlNoSegment) {
         presentationController.modalStyle = self.styleSegmentedControl.selectedSegmentIndex;
     }
+    if (self.styleSegmentedControl.selectedSegmentIndex == 3) {
+        ModalPresentationFromPointConfig *config = [[ModalPresentationFromPointConfig alloc] init];
+        config.anchorPoint = CGPointMake(1, 1);
+        config.initSizeRatio = 0.1;
+        config.initAlpha = 0.0;
+        config.frame = CGRectMake(30, 100, kSCREEN_WIDTH * 0.8, kSCREEN_WIDTH * 0.8);
+        presentationController.config = config;
+    }
     presentedModalViewController.delegate = self;
     presentedModalViewController.transitioningDelegate = presentationController;
     
@@ -89,7 +100,7 @@
 
 - (UISegmentedControl *)styleSegmentedControl {
     if (!_styleSegmentedControl) {
-        NSArray *items = @[@"center", @"top", @"bottom"];
+        NSArray *items = @[@"center", @"top", @"bottom", @"fromPoint"];
         _styleSegmentedControl = [[UISegmentedControl alloc] initWithItems:items];
         _styleSegmentedControl.tintColor = [UIColor whiteColor];
 //        _styleSegmentedControl.selectedSegmentIndex = 0;
